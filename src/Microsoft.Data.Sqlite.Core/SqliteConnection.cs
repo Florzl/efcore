@@ -56,7 +56,7 @@ namespace Microsoft.Data.Sqlite
                 ?.GetRuntimeMethod("Init", Type.EmptyTypes)
                 ?.Invoke(null, null);
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && IsRunningAsUwp())
             {
                 Type? appDataType = null;
                 Type? storageFolderType = null;
@@ -103,6 +103,11 @@ namespace Microsoft.Data.Sqlite
                 }
             }
         }
+
+        [DllImport("user32.dll")]
+        static extern bool IsImmersiveProcess(IntPtr hProcess);
+
+        private static bool IsRunningAsUwp() => IsImmersiveProcess(Process.GetCurrentProcess().Handle);
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SqliteConnection" /> class.
